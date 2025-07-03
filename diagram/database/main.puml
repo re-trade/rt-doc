@@ -1,0 +1,399 @@
+@startuml
+!theme vibrant
+
+entity "accounts" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  email : UK
+  enabled
+  hash_password
+  join_in_date
+  locked
+  secret : UK
+  username : UK
+  two_fa
+  changed_username
+  last_login
+}
+
+entity "roles" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  code : UK
+  name
+}
+
+entity "account_roles" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  enabled
+  account_id : FK
+  role_id : FK
+}
+
+entity "customers" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  address
+  avatar_url
+  first_name
+  last_name
+  phone
+  account_id : FK, UK
+  gender
+}
+
+entity "customer_contacts" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  country
+  customer_name
+  defaulted
+  district
+  name
+  phone
+  state
+  type
+  ward
+  customer_id : FK
+  address_line
+}
+
+entity "customers_contacts" {
+  * customers_id : PK, FK
+  * contacts_id : PK, FK, UK
+}
+
+entity "sellers" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  avatar_url
+  back_side_identity_card
+  background
+  description
+  email
+  front_side_identity_card
+  identity_number
+  phone_number
+  shop_name
+  verified
+  account_id : FK, UK
+  identity_verified
+  address_line
+  district
+  ward
+  state
+  balance
+  avg_vote
+}
+
+entity "brands" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  description
+  enabled
+  img_url
+  name
+}
+
+entity "categories" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  description
+  enabled
+  name
+  visible
+  parent_id : FK
+}
+
+entity "brand_categories" {
+  * brand_id : PK, FK
+  * category_id : PK, FK
+}
+
+entity "products" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  current_price
+  description
+  model
+  name
+  img_urls
+  short_description
+  tags
+  thumbnail
+  verified
+  seller_id : FK
+  enabled
+  avg_vote
+  condition
+  quantity
+  status
+  warranty_expiry_date
+  product_parent_id : FK
+  brand_id : FK
+}
+
+entity "product_categories" {
+  * product_id : PK, FK
+  * category_id : PK, FK
+}
+
+entity "product_reviews" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  content
+  status
+  vote
+  customer_id : FK
+  product_id : FK
+  order_id : FK
+}
+
+entity "product_price_histories" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  from_date
+  new_price
+  old_price
+  product_id : FK
+  update_date
+}
+
+entity "orders" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  discount_total
+  grand_total
+  shipping_total
+  sub_total
+  tax_total
+  customer_id : FK
+}
+
+entity "order_destinations" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  address
+  country
+  customer_name
+  district
+  phone
+  state
+  ward
+  order_id : FK, UK
+  address_line
+}
+
+entity "order_combos" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  grand_price
+  order_destination_id : FK
+  order_status_id : FK
+  seller_id : FK
+}
+
+entity "order_statuses" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  code
+  enabled
+  name
+}
+
+entity "order_items" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  background_url
+  base_price
+  product_name
+  short_description
+  unit
+  order_id : FK
+  order_combo_id : FK
+  product_id : FK
+  quantity
+}
+
+entity "order_histories" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  created_by
+  notes
+  status
+  order_combo_id : FK
+  seller_id : FK
+}
+
+entity "order_combo_deliveries" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  delivery_code
+  delivery_type
+  order_combo_id : FK
+}
+
+entity "payment_histories" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  payment_code
+  payment_content
+  payment_status
+  payment_time
+  payment_total
+  order_id : FK
+  payment_method_id : FK
+}
+
+entity "payment_methods" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  callback_uri : UK
+  code : UK
+  description
+  enabled
+  handler_class
+  img_url
+  name
+  type
+}
+
+entity "report_sellers" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  content
+  image
+  resolution_date
+  resolution_detail
+  resolution_status
+  type_report
+  seller_id : FK
+  admin_id : FK
+  customer_id : FK
+  product_id : FK
+  order_id : FK
+}
+
+' Entities from storage schema
+entity "media_files" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  download_count
+  file_size
+  file_url
+  is_public
+  original_name
+  stored_name
+}
+
+entity "video_streams" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  bitrate
+  description
+  duration_seconds
+  error_message
+  file_size
+  format
+  owner_id
+  processing_progress
+  resolution
+  source_service
+  status
+  stored_file_url
+  stream_url
+  thumbnail_url
+  title
+}
+
+' Relationships
+accounts ||--o{ account_roles : has
+accounts ||--o{ customers : has
+accounts ||--o{ sellers : has
+accounts ||--o{ login_sessions : has
+accounts ||--o{ report_sellers : resolves
+roles ||--o{ account_roles : assigned
+customers ||--o{ customer_contacts : has
+customers ||--o{ customers_contacts : links
+customers ||--o{ orders : places
+customers ||--o{ product_reviews : writes
+customers ||--o{ report_sellers : submits
+customer_contacts ||--o{ customers_contacts : linked
+sellers ||--o{ order_combos : manages
+sellers ||--o{ order_histories : updates
+sellers ||--o{ products : owns
+sellers ||--o{ report_sellers : reported
+brands ||--o{ products : associated
+brands ||--o{ brand_categories : linked
+categories ||--o{ brand_categories : linked
+categories ||--o{ product_categories : linked
+categories ||--o{ categories : parent
+products ||--o{ product_categories : belongs
+products ||--o{ product_reviews : reviewed
+products ||--o{ product_price_histories : tracks
+products ||--o{ order_items : included
+products ||--o{ report_sellers : reported
+orders ||--o{ order_destinations : has
+orders ||--o{ order_items : contains
+orders ||--o{ product_reviews : reviewed
+orders ||--o{ payment_histories : paid
+order_combos ||--o{ order_combo_deliveries : has
+order_combos ||--o{ order_histories : tracks
+order_combos ||--o{ order_items : groups
+order_combos ||--o{ report_sellers : reported
+order_combos ||--o{ order_statuses : has
+order_combos ||--o{ order_destinations : delivers
+order_statuses ||--o{ order_combos : defines
+order_destinations ||--o{ order_combos : used
+payment_methods ||--o{ payment_histories : used
+media_files ||--o{ products : images
+media_files ||--o{ sellers : identity
+media_files ||--o{ report_sellers : evidence
+@enduml

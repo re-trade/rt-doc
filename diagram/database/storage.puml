@@ -1,0 +1,38 @@
+@startuml Retrade Storage Schema ERD
+skinparam nodesep 50
+skinparam ranksep 30
+
+entity "media_files" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  download_count
+  file_size
+  file_url
+  is_public
+  original_name
+  stored_name
+}
+entity "video_streams" {
+  * id : PK
+  --
+  created_date
+  updated_date
+  bitrate
+  description
+  duration_seconds
+  error_message
+  file_size
+  format
+  owner_id
+  processing_progress
+  resolution
+  source_service
+  status
+  stored_file_url
+  stream_url
+  thumbnail_url
+  title
+}
+@enduml
