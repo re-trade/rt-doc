@@ -1,0 +1,111 @@
+' Post product
+@startuml
+title Product Listing Process
+
+start
+:Log in;
+if (Is Seller?) then (Yes)
+  :Switch to Seller Tab;
+  :Enter Product Information (name, description, price, condition);
+  :List Product for Sale;
+  :Wait for User Purchase;
+  :User Pays via PayOS/VNPay;
+  :Confirm Receipt of Goods;
+else (No)
+  :View Products;
+  :Make Purchase;
+endif
+stop
+@enduml
+
+' Making order flow
+@startuml
+title Making Order Flow
+
+start
+:Search for products;
+:View product details;
+:Add to cart;
+if (Next choice?) then (Continue payment)
+  :Pay for order;
+  if (Payment successful?) then (Yes)
+    :Save order information to Database;
+    :Display invoice and confirmation;
+    :Send "Order created" notification via Email;
+  else (No)
+    :Save failed transaction information to Database;
+    :Display order cancellation notice;
+    :Send "Order cancelled" notification via Email;
+  endif
+else (Continue shopping)
+  repeat
+    :Search for products;
+    :View product details;
+    :Add to cart;
+    if (Shopping complete?) then (Yes)
+      stop
+    else (No)
+    endif
+  repeat while (No)
+endif
+stop
+@enduml
+
+' Process Order and Deli
+@startuml
+title Process Order and Delivery
+start
+:Seller accesses Dashboard;
+:View and select order;
+:Prepare the order;
+:System updates status: Processing;
+
+if (Is the order ready for delivery?) then (Yes)
+  :Send to delivery service;
+  :Delivery service confirms delivery;
+  :System updates status: Delivered;
+else (No)
+  :Cancel the order;
+endif
+
+stop
+@enduml
+
+' Seller withdraw moeny
+@startuml
+title Seller Withdraw Flow
+start
+:Seller creates a withdrawal request;
+:System processes the withdrawal request;
+:Waiting for Admin approval;
+
+if (Did Admin approve the request?) then (Yes)
+  :System deducts money from Seller's wallet;
+  :System generates QR code or transfers via PayOS/VNPay;
+  :Seller receives the money;
+  :System checks transaction status (optional);
+else (No)
+  :Request is cancelled;
+endif
+
+stop
+@enduml
+
+' Register seller   
+@startuml
+title Register Seller Process
+start
+:Register a user account;
+:Login;
+:Request to become a Seller;
+:Submit registration info to the system;
+
+if (Did Admin approve the request?) then (Yes)
+  :Update status to Seller;
+  :Access Seller Dashboard;
+else (No)
+  :Cancel the registration request;
+endif
+
+stop
+@enduml
