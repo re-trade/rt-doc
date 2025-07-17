@@ -1,0 +1,176 @@
+
+' register seller
+@startuml
+actor User
+participant FE
+participant BE
+participant Database
+participant Admin
+
+User -> FE: Request Register as User
+FE -> BE: Call API RegisterUser(info)
+BE -> Database: Save User Data
+Database --> BE: Acknowledge
+BE --> FE: Return Success
+FE --> User: Show Success Message
+
+User -> FE: Login and Request Register as Seller
+FE -> BE: Call API RequestSellerRegistration(additionalInfo)
+BE -> Database: Save Seller Request
+Database --> BE: Acknowledge
+BE -> Admin: Notify for Approval
+Admin -> BE: Review and Approve/Reject
+BE -> Database: Update Seller Status
+Database --> BE: Acknowledge
+BE --> Admin: Confirm Update
+BE --> FE: Return Approval Result
+FE --> User: Show Result (Seller or Not)
+
+User -> FE: Manage Seller Page (if approved)
+FE -> BE: Call API ManageSellerPage(action)
+BE -> Database: Update Seller Data
+Database --> BE: Acknowledge
+BE --> FE: Return Success
+FE --> User: Show Updated Seller Page
+@enduml
+
+
+' post product
+@startuml
+actor User
+participant FE
+participant BE
+participant Database
+participant Admin
+participant PayOS_VNPay
+
+User -> FE: Request Register as User
+FE -> BE: Call API RegisterUser(info)
+BE -> Database: Save User Data
+Database --> BE: Acknowledge
+BE --> FE: Return Success
+FE --> User: Show Success Message
+
+User -> FE: Login and Request Register as Seller
+FE -> BE: Call API RequestSellerRegistration(additionalInfo)
+BE -> Database: Save Seller Request
+Database --> BE: Acknowledge
+BE -> Admin: Notify for Approval
+Admin -> BE: Review and Approve/Reject
+BE -> Database: Update Seller Status
+Database --> BE: Acknowledge
+BE --> Admin: Confirm Update
+BE --> FE: Return Approval Result
+FE --> User: Show Result (Seller or Not)
+
+User -> FE: Request Sell Product (Seller)
+FE -> BE: Call API RegisterProduct(details)
+BE -> Database: Save Product Data
+Database --> BE: Acknowledge
+BE --> FE: Return Success
+FE --> User: Show Product Listed
+
+User -> FE: Request Purchase Product
+FE -> PayOS_VNPay: Initiate Payment
+PayOS_VNPay -> BE: Notify Payment Success
+BE -> Database: Save Transaction
+Database --> BE: Acknowledge
+BE --> PayOS_VNPay: Confirm
+PayOS_VNPay --> FE: Return Payment Result
+FE --> User: Show Payment Success
+
+User -> FE: Confirm Product Received
+FE -> BE: Notify Order Confirmation
+BE -> Database: Update Order Status
+Database --> BE: Acknowledge
+BE -> PayOS_VNPay: Request Seller Payout
+PayOS_VNPay -> BE: Confirm Payout
+BE -> Database: Save Payout Record
+Database --> BE: Acknowledge
+BE --> FE: Return Payout Success
+FE --> User: Show Confirmation
+@enduml
+
+'process order
+@startuml
+title Process Order and Delivery
+
+actor Seller
+participant "Dashboard" as Dashboard
+participant "Order List" as OrderList
+participant "Order Detail" as OrderDetail
+participant "Packing Area" as PrepareOrder
+participant "System" as System
+participant "Database" as Database
+participant "Delivery Service" as Delivery
+participant "Confirmation" as Confirm
+
+Seller -> Dashboard : Access Dashboard
+Dashboard -> OrderList : View Orders
+OrderList -> OrderDetail : Select Order
+OrderDetail -> PrepareOrder : Prepare Order
+PrepareOrder -> System : Confirm Order Preparation
+System -> Database : Update status: Preparing
+Database --> System : Acknowledge
+System -> Delivery : Set status: Delivering
+Delivery -> Confirm : Confirm delivery
+alt Successful Delivery
+  Confirm --> System : Update status: Delivered
+  System -> Database : Update status: Delivered
+  Database --> System : Acknowledge
+  System -> Dashboard : Notify Seller
+  Dashboard --> Seller : Show Delivery Confirmation
+else Failed Delivery
+  Confirm --> System : Report Failure
+  System -> Database : Update status: Failed
+  Database --> System : Acknowledge
+  System -> Dashboard : Notify Seller
+  Dashboard --> Seller : Show Failure Notification
+end
+@enduml
+
+
+'create order and payment
+@startuml
+title Making Order Flow
+
+actor Customer
+participant "Search Page" as Search
+participant "Product Detail" as ProductDetail
+participant "Cart" as Cart
+participant "Checkout Page" as Checkout
+participant "Order Confirmation" as Confirm
+participant "PayOS/VNPay" as Payment
+participant "System" as System
+participant "Database" as Database
+participant "Email Service" as Email
+
+Customer -> Search : Search Products
+Search -> ProductDetail : View Product Detail
+ProductDetail -> Cart : Add to Cart
+Cart -> Checkout : Select Cart Items\nCheck Out
+Checkout -> Confirm : Confirm Information\nMake Order
+Confirm -> Payment : Redirect to PayOS/VNPay
+
+alt Payment Success
+    Payment -> System : Payment Success
+    System -> Database : Save Order
+    Database --> System : Acknowledge
+    System -> Checkout : Display Bill and Order
+    Checkout --> Customer : Show Order Confirmation
+    System -> Email : Send "Order Created" Notification
+    Email --> System : Acknowledge
+    System -> Checkout : Notify Customer
+    Checkout --> Customer : Show Email Sent
+else Payment Fail
+    Payment -> System : Payment Fail
+    System -> Database : Save Failed Transaction
+    Database --> System : Acknowledge
+    System -> Checkout : Display Order Cancel
+    Checkout --> Customer : Show Cancellation Notice
+    System -> Email : Send "Order Cancelled" Notification
+    Email --> System : Acknowledge
+    System -> Checkout : Notify Customer
+    Checkout --> Customer : Show Email Sent
+end
+@enduml
