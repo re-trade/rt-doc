@@ -14,7 +14,7 @@ InvalidRegistration --> [*]
 LoggedIn --> RequestingSeller : Request Seller Role
 LoggedIn --> [*] : Logout
 
-RequestingSeller --> WaitingApproval : Submit Seller Info (ID, Bank)
+RequestingSeller --> WaitingApproval : Submit Seller Info (Identity Card, Basic Self Infomation)
 RequestingSeller --> Cancelled : User Cancels
 RequestingSeller --> [*] : Logout
 
