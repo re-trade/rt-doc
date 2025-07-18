@@ -1,0 +1,47 @@
+@startuml
+!define ENTITY class
+!define RELATIONSHIP --> 
+ENTITY rooms {
+  id
+  seller_id
+  customer_id
+  privated
+  created_date
+  updated_at
+}
+
+ENTITY messages {
+  id
+  roomId
+  sender_id
+  content
+  created_at
+}
+
+ENTITY video_sessions {
+  id
+  roomId
+  start_time
+  end_time
+  participants
+  recording_url
+  duration
+  status
+  created_at
+  updated_at
+}
+
+ENTITY recordings {
+  id
+  call_session_id
+  file_path
+  start_time
+  end_time
+  created_at
+  updated_at
+}
+
+rooms ||--o{ messages : contains
+rooms ||--o{ video_sessions : hosts
+video_sessions ||--o{ recordings : records
+@enduml

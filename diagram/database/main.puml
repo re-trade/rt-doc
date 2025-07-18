@@ -1,399 +1,409 @@
 @startuml
-!theme vibrant
+!define ENTITY class
+!define RELATIONSHIP --> 
 
-entity "accounts" {
-  * id : PK
-  --
-  created_date
-  updated_date
-  email : UK
-  enabled
+' Authentication & User Management
+ENTITY accounts {
+  id
+  email
+  username
   hash_password
-  join_in_date
-  locked
-  secret : UK
-  username : UK
-  two_fa
-  changed_username
-  last_login
-}
-
-entity "roles" {
-  * id : PK
-  --
-  created_date
-  updated_date
-  code : UK
-  name
-}
-
-entity "account_roles" {
-  * id : PK
-  --
-  created_date
-  updated_date
   enabled
-  account_id : FK
-  role_id : FK
-}
-
-entity "customers" {
-  * id : PK
-  --
+  locked
+  two_fa
+  balance
+  join_in_date
+  last_login
+  changed_username
+  secret
   created_date
   updated_date
-  address
-  avatar_url
+}
+
+ENTITY roles {
+  id
+  code
+  name
+  created_date
+  updated_date
+}
+
+ENTITY account_roles {
+  id
+  account_id
+  role_id
+  enabled
+  created_date
+  updated_date
+}
+
+ENTITY login_sessions {
+  id
+  account_id
+  ip_address
+  login_time
+  device_name
+  device_fingerprint
+  user_agent
+  location
+  created_date
+  updated_date
+}
+
+' Customer Management
+ENTITY customers {
+  id
+  account_id
   first_name
   last_name
   phone
-  account_id : FK, UK
-  gender
-}
-
-entity "customer_contacts" {
-  * id : PK
-  --
-  created_date
-  updated_date
-  country
-  customer_name
-  defaulted
-  district
-  name
-  phone
-  state
-  type
-  ward
-  customer_id : FK
-  address_line
-}
-
-entity "customers_contacts" {
-  * customers_id : PK, FK
-  * contacts_id : PK, FK, UK
-}
-
-entity "sellers" {
-  * id : PK
-  --
-  created_date
-  updated_date
+  address
   avatar_url
-  back_side_identity_card
-  background
-  description
-  email
-  front_side_identity_card
-  identity_number
-  phone_number
+  gender
+  created_date
+  updated_date
+}
+
+ENTITY customer_contacts {
+  id
+  customer_id
+  name
+  customer_name
+  phone
+  address_line
+  country
+  state
+  district
+  ward
+  type
+  defaulted
+  created_date
+  updated_date
+}
+
+ENTITY customer_bank_infos {
+  id
+  customer_id
+  account_number
+  bank_name
+  user_bank_name
+  bank_bin
+  created_date
+  updated_date
+}
+
+' Seller Management
+ENTITY sellers {
+  id
+  account_id
   shop_name
+  email
+  phone_number
+  identity_number
+  description
+  avatar_url
+  background
+  front_side_identity_card
+  back_side_identity_card
   verified
-  account_id : FK, UK
   identity_verified
   address_line
   district
   ward
   state
-  balance
   avg_vote
-}
-
-entity "brands" {
-  * id : PK
-  --
   created_date
   updated_date
+}
+
+' Product Management
+ENTITY brands {
+  id
+  name
   description
-  enabled
   img_url
-  name
-}
-
-entity "categories" {
-  * id : PK
-  --
+  enabled
   created_date
   updated_date
+}
+
+ENTITY categories {
+  id
+  name
   description
   enabled
-  name
   visible
-  parent_id : FK
-}
-
-entity "brand_categories" {
-  * brand_id : PK, FK
-  * category_id : PK, FK
-}
-
-entity "products" {
-  * id : PK
-  --
+  parent_id
   created_date
   updated_date
-  current_price
-  description
-  model
+}
+
+ENTITY products {
+  id
+  seller_id
+  brand_id
   name
-  img_urls
+  model
+  description
   short_description
-  tags
+  current_price
   thumbnail
+  img_urls
+  tags
   verified
-  seller_id : FK
   enabled
   avg_vote
   condition
   quantity
   status
   warranty_expiry_date
-  product_parent_id : FK
-  brand_id : FK
-}
-
-entity "product_categories" {
-  * product_id : PK, FK
-  * category_id : PK, FK
-}
-
-entity "product_reviews" {
-  * id : PK
-  --
+  product_parent_id
   created_date
   updated_date
-  content
-  status
-  vote
-  customer_id : FK
-  product_id : FK
-  order_id : FK
 }
 
-entity "product_price_histories" {
-  * id : PK
-  --
-  created_date
-  updated_date
-  from_date
-  new_price
+ENTITY product_categories {
+  product_id
+  category_id
+}
+
+ENTITY brand_categories {
+  brand_id
+  category_id
+}
+
+ENTITY product_price_histories {
+  id
+  product_id
   old_price
-  product_id : FK
+  new_price
+  from_date
   update_date
-}
-
-entity "orders" {
-  * id : PK
-  --
   created_date
   updated_date
-  discount_total
-  grand_total
-  shipping_total
+}
+
+ENTITY product_reviews {
+  id
+  product_id
+  customer_id
+  seller_id
+  order_id
+  order_combo_id
+  content
+  vote
+  helpful
+  status
+  image_review
+  reply_content
+  reply_created_date
+  reply_updated_date
+  created_date
+  updated_date
+}
+
+' Order Management
+ENTITY orders {
+  id
+  customer_id
   sub_total
   tax_total
-  customer_id : FK
-}
-
-entity "order_destinations" {
-  * id : PK
-  --
+  discount_total
+  shipping_total
+  grand_total
   created_date
   updated_date
-  address
-  country
-  customer_name
-  district
-  phone
-  state
-  ward
-  order_id : FK, UK
-  address_line
 }
 
-entity "order_combos" {
-  * id : PK
-  --
-  created_date
-  updated_date
+ENTITY order_combos {
+  id
+  seller_id
+  order_status_id
+  order_destination_id
   grand_price
-  order_destination_id : FK
-  order_status_id : FK
-  seller_id : FK
-}
-
-entity "order_statuses" {
-  * id : PK
-  --
+  cancelled_reason
+  date_create_reason
   created_date
   updated_date
-  code
-  enabled
-  name
 }
 
-entity "order_items" {
-  * id : PK
-  --
-  created_date
-  updated_date
-  background_url
-  base_price
+ENTITY order_items {
+  id
+  order_id
+  order_combo_id
+  product_id
   product_name
   short_description
-  unit
-  order_id : FK
-  order_combo_id : FK
-  product_id : FK
+  background_url
+  base_price
   quantity
-}
-
-entity "order_histories" {
-  * id : PK
-  --
+  unit
   created_date
   updated_date
-  created_by
-  notes
+}
+
+ENTITY order_statuses {
+  id
+  code
+  name
+  enabled
+  created_date
+  updated_date
+}
+
+ENTITY order_destinations {
+  id
+  order_id
+  customer_name
+  phone
+  address
+  address_line
+  country
+  state
+  district
+  ward
+  created_date
+  updated_date
+}
+
+ENTITY order_histories {
+  id
+  order_combo_id
+  seller_id
+  old_order_status
+  new_order_status
+  current_order_status
   status
-  order_combo_id : FK
-  seller_id : FK
-}
-
-entity "order_combo_deliveries" {
-  * id : PK
-  --
+  notes
   created_date
   updated_date
+}
+
+ENTITY order_combo_deliveries {
+  id
+  order_combo_id
   delivery_code
   delivery_type
-  order_combo_id : FK
-}
-
-entity "payment_histories" {
-  * id : PK
-  --
   created_date
   updated_date
+}
+
+' Payment Management
+ENTITY payment_methods {
+  id
+  code
+  name
+  description
+  type
+  handler_class
+  callback_uri
+  img_url
+  enabled
+  created_date
+  updated_date
+}
+
+ENTITY payment_histories {
+  id
+  order_id
+  payment_method_id
   payment_code
   payment_content
+  payment_total
   payment_status
   payment_time
-  payment_total
-  order_id : FK
-  payment_method_id : FK
-}
-
-entity "payment_methods" {
-  * id : PK
-  --
   created_date
   updated_date
-  callback_uri : UK
-  code : UK
-  description
-  enabled
-  handler_class
-  img_url
-  name
+}
+
+' Financial Management
+ENTITY transactions {
+  id
+  account_id
+  order_combo_id
+  amount
   type
-}
-
-entity "report_sellers" {
-  * id : PK
-  --
   created_date
   updated_date
+}
+
+ENTITY withdraw_requests {
+  id
+  account_id
+  amount
+  bank_account
+  bank_bin
+  user_bank_name
+  status
+  notes
+  processed_date
+  prove_image_url
+  qr_code_url
+  created_date
+  updated_date
+}
+' Reporting System
+ENTITY report_sellers {
+  id
+  seller_id
+  customer_id
+  admin_id
+  product_id
+  order_id
+  type_report
   content
   image
-  resolution_date
-  resolution_detail
   resolution_status
-  type_report
-  seller_id : FK
-  admin_id : FK
-  customer_id : FK
-  product_id : FK
-  order_id : FK
-}
-
-' Entities from storage schema
-entity "media_files" {
-  * id : PK
-  --
+  resolution_detail
+  resolution_date
   created_date
   updated_date
-  download_count
-  file_size
-  file_url
-  is_public
-  original_name
-  stored_name
 }
 
-entity "video_streams" {
-  * id : PK
-  --
-  created_date
-  updated_date
-  bitrate
-  description
-  duration_seconds
-  error_message
-  file_size
-  format
-  owner_id
-  processing_progress
-  resolution
-  source_service
-  status
-  stored_file_url
-  stream_url
-  thumbnail_url
-  title
-}
-
-' Relationships
 accounts ||--o{ account_roles : has
-accounts ||--o{ customers : has
-accounts ||--o{ sellers : has
-accounts ||--o{ login_sessions : has
-accounts ||--o{ report_sellers : resolves
-roles ||--o{ account_roles : assigned
+roles ||--o{ account_roles : assigned_to
+accounts ||--o{ login_sessions : creates
+accounts ||--|| customers : profile
+accounts ||--|| sellers : profile
+accounts ||--o{ transactions : owns
+accounts ||--o{ withdraw_requests : requests
+
 customers ||--o{ customer_contacts : has
-customers ||--o{ customers_contacts : links
+customers ||--o{ customer_bank_infos : has
 customers ||--o{ orders : places
 customers ||--o{ product_reviews : writes
-customers ||--o{ report_sellers : submits
-customer_contacts ||--o{ customers_contacts : linked
+customers ||--o{ rooms : participates
+customers ||--o{ report_sellers : reports
+
+sellers ||--o{ products : sells
 sellers ||--o{ order_combos : manages
-sellers ||--o{ order_histories : updates
-sellers ||--o{ products : owns
-sellers ||--o{ report_sellers : reported
-brands ||--o{ products : associated
-brands ||--o{ brand_categories : linked
-categories ||--o{ brand_categories : linked
-categories ||--o{ product_categories : linked
-categories ||--o{ categories : parent
-products ||--o{ product_categories : belongs
-products ||--o{ product_reviews : reviewed
+sellers ||--o{ order_histories : tracks
+sellers ||--o{ rooms : participates
+sellers ||--o{ product_reviews : receives
+
+brands ||--o{ products : categorizes
+brands ||--o{ brand_categories : belongs_to
+categories ||--o{ product_categories : contains
+categories ||--o{ brand_categories : includes
+categories ||--o{ categories : parent_of
+
+products ||--o{ product_categories : belongs_to
 products ||--o{ product_price_histories : tracks
-products ||--o{ order_items : included
-products ||--o{ report_sellers : reported
-orders ||--o{ order_destinations : has
+products ||--o{ product_reviews : receives
+products ||--o{ order_items : ordered_as
+products ||--o{ products : variant_of
+
 orders ||--o{ order_items : contains
-orders ||--o{ product_reviews : reviewed
-orders ||--o{ payment_histories : paid
-order_combos ||--o{ order_combo_deliveries : has
-order_combos ||--o{ order_histories : tracks
+orders ||--|| order_destinations : shipped_to
+orders ||--o{ payment_histories : paid_by
+orders ||--o{ product_reviews : reviewed_for
+
 order_combos ||--o{ order_items : groups
-order_combos ||--o{ report_sellers : reported
-order_combos ||--o{ order_statuses : has
-order_combos ||--o{ order_destinations : delivers
-order_statuses ||--o{ order_combos : defines
-order_destinations ||--o{ order_combos : used
-payment_methods ||--o{ payment_histories : used
-media_files ||--o{ products : images
-media_files ||--o{ sellers : identity
-media_files ||--o{ report_sellers : evidence
+order_combos ||--|| order_statuses : has_status
+order_combos ||--|| order_destinations : shipped_to
+order_combos ||--o{ order_histories : tracked_by
+order_combos ||--o{ order_combo_deliveries : delivered_by
+order_combos ||--o{ transactions : generates
+
+payment_methods ||--o{ payment_histories : processes
 @enduml
