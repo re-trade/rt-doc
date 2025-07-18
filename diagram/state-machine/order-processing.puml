@@ -1,0 +1,24 @@
+@startuml
+title Order Processing & Delivery - State Machine Diagram
+
+[*] --> DashboardAccessed
+DashboardAccessed --> OrderSelected : Seller views & selects order
+OrderSelected --> Preparing : Seller prepares the order
+Preparing --> Processing : System updates status to Processing
+
+Processing --> Delivering : Order ready → dispatch to delivery service
+Delivering --> Delivered : Delivery confirmed → system updates status
+Delivered --> Completed : Buyer confirms receipt, order finalized
+Completed --> [*]
+
+Processing --> OnHold : Insufficient stock or delay
+OnHold --> Processing : Issue resolved
+OnHold --> Cancelled : Issue unresolved after timeout
+
+Processing --> Cancelled : Seller cancels order or payment failed
+Delivering --> Returned : Delivery failed, item returned
+Returned --> Cancelled : Seller confirms return
+Returned --> Processing : Reschedule delivery
+
+Cancelled --> [*]
+@enduml

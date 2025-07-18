@@ -1,0 +1,28 @@
+@startuml admin-accept-seller
+title Sequence Diagram - Admin Accept Seller
+
+actor Admin
+participant "Main Service" as Main
+participant "Frontend" as FE
+participant "Database" as DB
+participant "Mail Service" as Mail
+
+Admin -> FE : Login & View Pending Sellers
+FE -> Main : Request Pending Seller List
+Main -> DB : Query Sellers (Pending Approval)
+DB --> Main : Pending Sellers
+Main --> FE : Seller List
+
+Admin -> FE : Review & Approve/Reject Seller
+FE -> Main : Submit Approval Decision
+Main -> DB : Update Seller Status (Approved/Rejected)
+DB --> Main : Status Updated
+alt Approved
+    Main -> FE : Notify Admin Approval Success
+    Main -> Mail : Send Approval Email to User
+else Rejected
+    Main -> FE : Notify Admin Rejection Success
+    Main -> Mail : Send Rejection Email to User
+end
+
+@enduml

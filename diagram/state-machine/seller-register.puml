@@ -1,0 +1,37 @@
+@startuml register seller
+title Seller Registration - State Machine Diagram
+
+[*] --> RegisteredUser : Submit Registration Form
+RegisteredUser --> ValidationPending : System Validates Input
+ValidationPending --> EmailVerification : Email Valid
+EmailVerification --> LoggedIn : Email Verified
+EmailVerification --> InvalidRegistration : Verification Failed
+
+ValidationPending --> InvalidRegistration : Invalid Email/Password
+InvalidRegistration --> Cancelled : Notify Failure
+InvalidRegistration --> [*]
+
+LoggedIn --> RequestingSeller : Request Seller Role
+LoggedIn --> [*] : Logout
+
+RequestingSeller --> WaitingApproval : Submit Seller Info (ID, Bank)
+RequestingSeller --> Cancelled : User Cancels
+RequestingSeller --> [*] : Logout
+
+WaitingApproval --> Approved : Admin Approves
+Approved --> Seller : Grant Seller Role
+Seller --> SellerDashboard : Access Dashboard
+SellerDashboard --> ActiveSelling : Manage Products
+ActiveSelling --> SellerDashboard : Back to Dashboard
+
+WaitingApproval --> Rejected : Admin Rejects
+Rejected --> ResubmitRequest : Correct Info
+Rejected --> Banned : Multiple Rejections
+Rejected --> Cancelled : Cancel Request
+Rejected --> [*] : Logout
+
+ResubmitRequest --> WaitingApproval : Resubmit
+Cancelled --> [*]
+Suspended --> [*] : Seller Suspended
+
+SellerDashboard --> Suspended : Policy Violation

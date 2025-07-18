@@ -1,0 +1,45 @@
+@startuml register-seller-summit-flow
+title Sequence Diagram - Register as a Seller (Summit Flow)
+
+actor User
+participant "Frontend" as FE
+participant "Main Service" as Main
+participant "Message Broker" as Broker
+participant "MinIO" as MinIO
+participant "Prover Service" as Prover
+participant "OCR FPT" as OCR
+participant "Database" as DB
+
+User -> FE : Register Customer Account
+FE -> Main : Submit Customer Info
+Main -> DB : Save Customer Data
+DB --> Main : Success/Failure
+Main --> FE : Show Result
+
+User -> FE : Register as Seller (after customer)
+FE -> Main : Submit Seller Info + 2 ID Images
+Main -> Main : Encrypt ID Images
+Main -> MinIO : Upload Encrypted ID Images
+MinIO --> Main : Image URLs
+Main -> DB : Create Seller Account
+DB --> Main : Seller Created
+Main -> Broker : Send Verification Message (with Image URLs)
+' No status returned to FE after this point, as processing is background
+Broker -> Prover : Deliver Verification Request
+Prover -> MinIO : Download Encrypted ID Images
+MinIO --> Prover : Encrypted Images
+Prover -> Prover : Decrypt ID Images
+Prover -> OCR : Send ID Card Images for OCR
+OCR --> Prover : OCR Result
+Prover -> Main : Verification Result (Success/Fail)
+alt Verification Failed
+    Main -> DB : Update Seller Verification Status (Failed)
+    DB --> Main : Status Updated
+    Main -> Main : Prepare Failure Email
+    Main -> Mail : Send Failure Notification
+else Verification Success
+    Main -> DB : Update Seller Verification Status (Success)
+    DB --> Main : Status Updated
+end
+
+@enduml

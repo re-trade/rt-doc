@@ -1,0 +1,47 @@
+@startuml product-view-state-machine
+title Product Viewing - Corrected State Machine
+[*] --> Guest
+Guest --> LoggedIn : Log In
+Guest --> Browsing : Browse as Guest
+
+state LoggedIn {
+  [*] --> CustomerOrSeller
+  CustomerOrSeller --> SellerFlow : Select Seller Role
+  CustomerOrSeller --> CustomerFlow : Select Customer Role
+  CustomerOrSeller --> Guest : Logout
+
+  state SellerFlow {
+    [*] --> SwitchToSellerTab
+    SwitchToSellerTab --> EnterProductInfo : Fill in Product Form
+    EnterProductInfo --> EnterProductInfo : Invalid Input - Retry
+    EnterProductInfo --> Listed : Product Listed
+    Listed --> EditProduct : Edit Product Info
+    EditProduct --> Listed : Save Changes
+    Listed --> WaitingForPurchase
+    WaitingForPurchase --> OrderConfirmed : Payment Confirmed (from Customer)
+    OrderConfirmed --> Confirmed : Seller Confirms Shipment / Receipt
+    Confirmed --> [*] : Transaction Finalized
+    WaitingForPurchase --> Canceled : Seller Cancels Listing
+    Canceled --> [*]
+    SellerFlow --> Guest : Logout
+  }
+
+  state CustomerFlow {
+    [*] --> Browsing
+    Browsing --> AddToCart : Add Product to Cart
+    AddToCart --> Browsing : Abandon Cart
+    AddToCart --> Checkout : Proceed to Checkout
+    Checkout --> ProcessingPayment : Pay via PayOS/VNPay
+    ProcessingPayment --> ProcessingPayment : Payment Failed - Retry
+    ProcessingPayment --> OrderConfirmed : Payment Successful
+    OrderConfirmed --> Shipped : Seller Ships Product
+    Shipped --> ReceivedGoods : Customer Confirms Receipt
+    ReceivedGoods --> ReturnInitiated : Request Return / Refund
+    ReturnInitiated --> [*] : Return Processed
+    ReceivedGoods --> [*] : Transaction Finalized
+    Checkout --> Canceled : Cancel Order
+    Canceled --> [*]
+    CustomerFlow --> Guest : Logout
+  }
+}
+@enduml

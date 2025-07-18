@@ -1,0 +1,54 @@
+@startuml
+actor User
+participant FE
+participant BE
+participant Database
+participant Admin
+participant PayOS_VNPay
+
+User -> FE: Request Register as User
+FE -> BE: Call API RegisterUser(info)
+BE -> Database: Save User Data
+Database --> BE: Acknowledge
+BE --> FE: Return Success
+FE --> User: Show Success Message
+
+User -> FE: Login and Request Register as Seller
+FE -> BE: Call API RequestSellerRegistration(additionalInfo)
+BE -> Database: Save Seller Request
+Database --> BE: Acknowledge
+BE -> Admin: Notify for Approval
+Admin -> BE: Review and Approve/Reject
+BE -> Database: Update Seller Status
+Database --> BE: Acknowledge
+BE --> Admin: Confirm Update
+BE --> FE: Return Approval Result
+FE --> User: Show Result (Seller or Not)
+
+User -> FE: Request Sell Product (Seller)
+FE -> BE: Call API RegisterProduct(details)
+BE -> Database: Save Product Data
+Database --> BE: Acknowledge
+BE --> FE: Return Success
+FE --> User: Show Product Listed
+
+User -> FE: Request Purchase Product
+FE -> PayOS_VNPay: Initiate Payment
+PayOS_VNPay -> BE: Notify Payment Success
+BE -> Database: Save Transaction
+Database --> BE: Acknowledge
+BE --> PayOS_VNPay: Confirm
+PayOS_VNPay --> FE: Return Payment Result
+FE --> User: Show Payment Success
+
+User -> FE: Confirm Product Received
+FE -> BE: Notify Order Confirmation
+BE -> Database: Update Order Status
+Database --> BE: Acknowledge
+BE -> PayOS_VNPay: Request Seller Payout
+PayOS_VNPay -> BE: Confirm Payout
+BE -> Database: Save Payout Record
+Database --> BE: Acknowledge
+BE --> FE: Return Payout Success
+FE --> User: Show Confirmation
+@enduml

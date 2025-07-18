@@ -1,0 +1,30 @@
+@startuml
+title Seller Withdrawal - State Machine Diagram
+
+[*] --> WithdrawalRequested : Seller submits withdrawal request
+WithdrawalRequested --> ValidationPending : System validates request (balance, details)
+
+ValidationPending --> WaitingApproval : Validation successful
+ValidationPending --> InvalidRequest : Insufficient balance or invalid data
+InvalidRequest --> Cancelled : Notify seller, request cancelled
+InvalidRequest --> [*]
+
+WaitingApproval --> Approved : Admin approves request
+WaitingApproval --> Rejected : Admin rejects request
+WaitingApproval --> OnHold : Admin requests additional info
+
+Approved --> ProcessingTransfer : System deducts money,\ngenerates QR/PayOS/VNPay code
+ProcessingTransfer --> Received : Seller confirms receipt of funds
+ProcessingTransfer --> TransferFailed : Payment processing error
+TransferFailed --> RetryTransfer : Retry payment
+TransferFailed --> Cancelled : Exceed retry limit, refund balance
+RetryTransfer --> ProcessingTransfer : Re-initiate transfer
+
+Rejected --> Cancelled : Notify seller, request cancelled
+OnHold --> WaitingApproval : Seller provides additional info
+OnHold --> Cancelled : Seller does not respond within timeout
+
+Received --> Completed : Transaction finalized
+Cancelled --> [*]
+Completed --> [*]
+@enduml
