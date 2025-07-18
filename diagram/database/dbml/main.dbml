@@ -1,0 +1,350 @@
+Table accounts {
+  id varchar(255) [pk]
+  email varchar(255) [not null]
+  username varchar(255) [not null]
+  hash_password varchar(255) [not null]
+  enabled boolean [not null]
+  locked boolean [not null]
+  two_fa boolean [not null]
+  balance decimal(38,2) [default: 0.0000]
+  join_in_date timestamp [not null]
+  last_login timestamp
+  changed_username boolean [default: false]
+  secret varchar(255) [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table roles {
+  id varchar(255) [pk]
+  code varchar(255) [not null]
+  name varchar(255) [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table account_roles {
+  id varchar(255) [pk]
+  account_id varchar(255) [not null, ref: > accounts.id]
+  role_id varchar(255) [not null, ref: > roles.id]
+  enabled boolean [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table login_sessions {
+  id varchar(255) [pk]
+  account_id varchar(255) [not null, ref: > accounts.id]
+  ip_address varchar(15) [not null]
+  login_time timestamp [not null]
+  device_name varchar(255)
+  device_fingerprint varchar(255)
+  user_agent varchar(255)
+  location varchar(255)
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table customers {
+  id varchar(255) [pk]
+  account_id varchar(255) [not null, ref: - accounts.id]
+  first_name varchar(255)
+  last_name varchar(255)
+  phone varchar(20)
+  address text
+  avatar_url text
+  gender int [default: 1]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table customer_contacts {
+  id varchar(255) [pk]
+  customer_id varchar(255) [not null, ref: > customers.id]
+  name varchar(50) [not null]
+  customer_name varchar(50) [not null]
+  phone varchar(12) [not null]
+  address_line varchar(255) [not null]
+  country varchar(20) [not null]
+  state varchar(50) [not null]
+  district varchar(50) [not null]
+  ward varchar(50) [not null]
+  type int [not null]
+  defaulted boolean [default: false]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table customer_bank_infos {
+  id varchar(255) [pk]
+  customer_id varchar(255) [not null, ref: > customers.id]
+  account_number varchar(20) [not null]
+  bank_name varchar(128) [not null]
+  user_bank_name varchar(128)
+  bank_bin varchar(20) [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table sellers {
+  id varchar(255) [pk]
+  account_id varchar(255) [not null, ref: - accounts.id]
+  shop_name varchar(50) [not null]
+  email varchar(50) [not null]
+  phone_number varchar(12) [not null]
+  identity_number varchar(20) [not null]
+  description text
+  avatar_url varchar(256)
+  background varchar(256)
+  front_side_identity_card varchar(256)
+  back_side_identity_card varchar(256)
+  verified boolean [not null]
+  identity_verified smallint [default: 0]
+  address_line varchar(100) [not null]
+  district varchar(50) [not null]
+  ward varchar(50) [not null]
+  state varchar(50) [not null]
+  avg_vote double
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table brands {
+  id varchar(255) [pk]
+  name varchar(255)
+  description varchar(255)
+  img_url varchar(255)
+  enabled boolean
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table categories {
+  id varchar(255) [pk]
+  name varchar(100) [not null]
+  description text
+  enabled boolean [not null]
+  visible boolean [not null]
+  parent_id varchar(255) [ref: > categories.id]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table products {
+  id varchar(255) [pk]
+  seller_id varchar(255) [not null, ref: > sellers.id]
+  brand_id varchar(255) [not null, ref: > brands.id]
+  name varchar(255)
+  model varchar(128) [not null]
+  description text
+  short_description text
+  current_price decimal(38,2) [not null]
+  thumbnail varchar(256)
+  img_urls "varchar(255)[]"
+  tags "varchar(255)[]"
+  verified boolean [not null]
+  enabled smallint [default: 0]
+  avg_vote decimal(5,2) [default: 0.00]
+  condition smallint [default: 0]
+  quantity int [default: 0]
+  status smallint [default: 0]
+  warranty_expiry_date date
+  product_parent_id varchar(255) [ref: > products.id]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table product_categories {
+  product_id varchar(255) [ref: > products.id]
+  category_id varchar(255) [ref: > categories.id]
+}
+
+Table brand_categories {
+  brand_id varchar(255) [ref: > brands.id]
+  category_id varchar(255) [ref: > categories.id]
+}
+
+Table product_price_histories {
+  id varchar(255) [pk]
+  product_id varchar(255) [not null, ref: > products.id]
+  old_price decimal(38,2) [not null]
+  new_price decimal(38,2) [not null]
+  from_date timestamp [not null]
+  update_date timestamp [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table product_reviews {
+  id varchar(255) [pk]
+  product_id varchar(255) [not null, ref: > products.id]
+  customer_id varchar(255) [not null, ref: > customers.id]
+  seller_id varchar(255) [not null, ref: > sellers.id]
+  order_id varchar(255) [not null, ref: > orders.id]
+  order_combo_id varchar(255) [not null, ref: > order_combos.id]
+  content varchar(255) [not null]
+  vote double [not null]
+  helpful double
+  status boolean [not null]
+  image_review "varchar(255)[]"
+  reply_content varchar(255)
+  reply_created_date timestamp
+  reply_updated_date timestamp
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table orders {
+  id varchar(255) [pk]
+  customer_id varchar(255) [not null, ref: > customers.id]
+  sub_total decimal(38,2) [not null]
+  tax_total decimal(38,2) [not null]
+  discount_total decimal(38,2) [not null]
+  shipping_total double [not null]
+  grand_total decimal(38,2) [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table order_combos {
+  id varchar(255) [pk]
+  seller_id varchar(255) [not null, ref: > sellers.id]
+  order_status_id varchar(255) [not null, ref: > order_statuses.id]
+  order_destination_id varchar(255) [not null, ref: > order_destinations.id]
+  grand_price decimal(38,2) [not null]
+  cancelled_reason varchar(255)
+  date_create_reason timestamp
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table order_items {
+  id varchar(255) [pk]
+  order_id varchar(255) [not null, ref: > orders.id]
+  order_combo_id varchar(255) [not null, ref: > order_combos.id]
+  product_id varchar(255) [not null, ref: > products.id]
+  product_name varchar(128) [not null]
+  short_description text [not null]
+  background_url varchar(256) [not null]
+  base_price decimal(38,2) [not null]
+  quantity int [default: 1]
+  unit varchar(10) [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table order_statuses {
+  id varchar(255) [pk]
+  code varchar(20) [not null]
+  name varchar(50) [not null]
+  enabled boolean [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table order_destinations {
+  id varchar(255) [pk]
+  order_id varchar(255) [not null, ref: > orders.id]
+  customer_name varchar(255) [not null]
+  phone varchar(12) [not null]
+  address varchar(500)
+  address_line varchar(500)
+  country varchar(20)
+  state varchar(20)
+  district varchar(20)
+  ward varchar(20)
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table order_histories {
+  id varchar(255) [pk]
+  order_combo_id varchar(255) [not null, ref: > order_combos.id]
+  seller_id varchar(255) [not null, ref: > sellers.id]
+  old_order_status varchar(255) [not null]
+  new_order_status varchar(255) [not null]
+  current_order_status varchar(255) [not null]
+  status boolean [not null]
+  notes text
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table order_combo_deliveries {
+  id varchar(255) [pk]
+  order_combo_id varchar(255) [not null, ref: > order_combos.id]
+  delivery_code varchar(255) [not null]
+  delivery_type varchar(255) [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table payment_methods {
+  id varchar(255) [pk]
+  code varchar(50) [not null]
+  name varchar(50) [not null]
+  description varchar(500) [not null]
+  type varchar(255) [not null]
+  handler_class varchar(255) [not null]
+  callback_uri varchar(255) [not null]
+  img_url varchar(255) [not null]
+  enabled boolean [default: true]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table payment_histories {
+  id varchar(255) [pk]
+  order_id varchar(255) [not null, ref: > orders.id]
+  payment_method_id varchar(255) [not null, ref: > payment_methods.id]
+  payment_code varchar(20)
+  payment_content varchar(1024)
+  payment_total decimal(38,2) [not null]
+  payment_status varchar [default: 'CREATED']
+  payment_time timestamp
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table transactions {
+  id varchar(255) [pk]
+  account_id varchar(255) [not null, ref: > accounts.id]
+  order_combo_id varchar(255) [ref: > order_combos.id]
+  amount decimal(38,2)
+  type varchar(255)
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table withdraw_requests {
+  id varchar(255) [pk]
+  account_id varchar(255) [not null, ref: > accounts.id]
+  amount decimal(38,2) [not null]
+  bank_account varchar(20) [not null]
+  bank_bin varchar(10) [not null]
+  user_bank_name varchar(128) [not null]
+  status smallint [not null]
+  notes text
+  processed_date timestamp
+  prove_image_url varchar(255)
+  qr_code_url text
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table report_sellers {
+  id varchar(255) [pk]
+  seller_id varchar(255) [not null, ref: > sellers.id]
+  customer_id varchar(255) [not null, ref: > customers.id]
+  admin_id varchar(255) [not null]
+  product_id varchar(255) [not null, ref: > products.id]
+  order_id varchar(255) [not null, ref: > orders.id]
+  type_report text [not null]
+  content text [not null]
+  image varchar(255)
+  resolution_status text [not null]
+  resolution_detail text [not null]
+  resolution_date timestamp [not null]
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}

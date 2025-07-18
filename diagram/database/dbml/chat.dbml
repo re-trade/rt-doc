@@ -1,0 +1,42 @@
+Table rooms {
+  id text [primary key]
+  seller_id text [not null]
+  customer_id text [not null]
+  privated boolean [default: false]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null]
+  indexes {
+    (seller_id, customer_id) [unique, name: "unique_seller_customer"]
+  }
+}
+
+Table messages {
+  id text [primary key]
+  roomId text [not null, ref: > rooms.id]
+  sender_id text [not null]
+  content text [not null]
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table video_sessions {
+  id text [primary key]
+  roomId text [not null, ref: > rooms.id]
+  start_time timestamp [not null]
+  end_time timestamp
+  participants text[]
+  recording_url text
+  duration int
+  status text [default: 'active']
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null]
+}
+
+Table recordings {
+  id text [primary key]
+  call_session_id text [not null]
+  file_path text [not null]
+  start_time timestamp [not null]
+  end_time timestamp
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [not null]
+}

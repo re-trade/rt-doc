@@ -1,0 +1,32 @@
+Table media_files {
+  id varchar(255) [pk]
+  original_name varchar(255) [not null]
+  stored_name varchar(255) [not null]
+  file_url text [not null]
+  file_size bigint [not null]
+  is_public boolean [not null]
+  download_count bigint
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}
+
+Table video_streams {
+  id varchar(255) [pk]
+  owner_id varchar(36)
+  title varchar(255) [not null]
+  description text
+  source_service varchar(100) [not null]
+  status varchar(20) [not null]
+  stream_url text
+  stored_file_url text
+  thumbnail_url text
+  format varchar(20)
+  resolution varchar(20)
+  bitrate int
+  duration_seconds bigint
+  file_size bigint
+  processing_progress int
+  error_message text
+  created_date timestamp [not null]
+  updated_date timestamp [not null]
+}

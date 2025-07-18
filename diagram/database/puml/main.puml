@@ -372,13 +372,11 @@ customers ||--o{ customer_contacts : has
 customers ||--o{ customer_bank_infos : has
 customers ||--o{ orders : places
 customers ||--o{ product_reviews : writes
-customers ||--o{ rooms : participates
 customers ||--o{ report_sellers : reports
 
 sellers ||--o{ products : sells
 sellers ||--o{ order_combos : manages
 sellers ||--o{ order_histories : tracks
-sellers ||--o{ rooms : participates
 sellers ||--o{ product_reviews : receives
 
 brands ||--o{ products : categorizes
